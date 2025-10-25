@@ -1,0 +1,51 @@
+.learning-journey{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 2rem;
+    gap: 4rem;
+    width: 100%;
+}
+
+.journey{
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    gap: 96px;
+    width: 100%;
+    align-items: center;
+    padding: 2rem;
+}
+
+.journey .journey-lines{
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+    pointer-events: none;
+
+    stroke: var(--Yellow);
+    stroke-width: 3px;
+    fill: none;
+}
+
+.journey .step{
+    width: 391px;
+    height: 96px;
+    background-color: var(--lGreen);
+    border: 3px solid var(--lGreenB);
+    border-radius: 6666px;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.journey .step.right{
+    margin-left: 391px;
+}
+
+.journey .step.left{
+    margin-right: 391px;
+}

@@ -1,0 +1,13 @@
+:root{
+    --White: #F7FFF9;
+    --Black: #333333;
+    --lGreen: #E4FAED;
+    --lGreenB: #DDF9E7;
+    --Green: #599C74;
+    --GreenT: #20603A;
+    --Yellow: #F6C358;
+}
+
+div{
+    box-sizing: border-box;
+}

@@ -1,0 +1,149 @@
+.flip-ant{
+    transform: rotateY(180deg);
+}
+
+.half-opacity{
+    opacity: 0.5;
+}
+
+.hero{
+    display: flex;
+    flex-direction: column;
+    height: 100svh;
+    width: 100%;
+    justify-content: center;
+    align-items: center;
+    padding: 32px;
+}
+
+.hero .frame10{
+    display: flex;
+    gap: 32px;
+    justify-content: center;
+    align-items: center;
+    width: max-content;
+}
+
+.left{
+    display: flex;
+    flex-direction: column;
+    width: max-content;
+    padding: 8px;
+    gap: 32px;
+}
+
+.right{
+    display: flex;
+    flex-direction: column;
+    width: max-content;
+    height: max-content;
+    padding: 8px;
+    gap: 16px;
+
+    overflow: hidden;
+}
+
+.right div:nth-child(1){
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.right .yt-video{
+    width: 800px;
+    height: 450px;
+    background-color: #D9D9D9;
+}
+
+/* Header */
+
+.logo-title{
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    width: max-content;
+}
+
+.logo-title img{
+    width: 80px;
+    height: 80px;
+    object-fit: contain;
+}
+
+.logo-title div{
+    display: flex;
+    flex-direction: column;
+}
+
+h1{
+    font-size: 48px;
+    font-family: Montserrat;
+    margin: 0;
+    font-family: "Montserrat", sans-serif;
+    font-weight: normal;
+}
+
+.logo-title h2{
+    font-weight: normal;
+}
+
+.profile-card h2{
+    font-weight: 600;
+    color: var(--Black);
+}
+
+h2{
+    font-family: "Montserrat", sans-serif;
+    font-size: 24px;
+    margin: 0;
+    color: var(--GreenT);
+}
+
+/* Card */
+
+.profile-card{
+    display: flex;
+    align-items: center;
+    width: max-content;
+}
+
+.profile-card .frame4{
+    display: flex;
+    padding: 1rem;
+    gap: 1rem;
+
+    background-color: #E4FAED;
+    border: 2px solid #DDF9E7;
+
+    border-radius: 750px 6666px 6666px 750px;
+}
+
+.profile-card img{
+    width: 311px;
+    height: 311px;
+    object-fit: contain;
+}
+
+.profile-card .frame4 div:nth-child(1){
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.profile-card .frame4 div div{
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.profile-card h3{
+    margin: 0;
+    font-size: 18px;
+    color: var(--GreenT);
+}
+
+.profile-card ul{
+    margin: 0;
+    list-style-position: inside;
+    padding-left: 0;
+}
