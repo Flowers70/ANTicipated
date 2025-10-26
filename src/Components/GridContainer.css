@@ -1,0 +1,21 @@
+.skills-container{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 24px;
+    padding: 16px;
+    width: 700px;
+}
+
+.skills-container .skills{
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    width: 100%;
+}
+
+.skills-container .skills .row{
+    display: flex;
+    gap: 16px;
+    width: 100%;
+}

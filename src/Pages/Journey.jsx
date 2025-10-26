@@ -1,16 +1,41 @@
-import { useEffect } from "react";
+import React, { useEffect } from "react";
 import "./Journey.css";
 
 function Draw_Journey(){
     const steps = document.querySelectorAll(".step");
     let svgPath = '';
+    const pathTemplate = (path, id) => {
+        return `<path id='segment-${id}' d='${path}'></path>`;
+    }
+
+    const imageSize_W = 53;
+    const imageSize_H = 25;
+    const antImg = (id) => { return `<image id='segment-pic-${id}' href='ant_005.png' width='${imageSize_W}px' height='${imageSize_H}px'></image>`};
 
     const wrapper = document.querySelector('.journey-lines');
     const wrapperRect = wrapper.getBoundingClientRect();
+    wrapper.innerHTML = "";
 
     console.log("Bouding Box:", wrapperRect.top, wrapperRect.right, wrapperRect.bottom, wrapperRect.left);
 
-    let right = false;
+    const gap = 10;
+    const arrow_size = 12;
+
+    const wrapperM = (wrapperRect.right - wrapperRect.left)/2;
+    const firstStepTop = steps[0].getBoundingClientRect().top - wrapperRect.top - gap;
+
+    svgPath = `M ${wrapperM} ${gap}
+                L ${wrapperM} ${firstStepTop}`;
+
+    svgPath += `M ${wrapperM} ${firstStepTop} 
+                L ${wrapperM - arrow_size} ${firstStepTop - arrow_size}
+                M ${wrapperM} ${firstStepTop} 
+                L ${wrapperM + arrow_size} ${firstStepTop - arrow_size}`;
+
+    let pathElement = pathTemplate(svgPath, 0);
+    wrapper.innerHTML += pathElement;
+
+    console.log("SVG:", svgPath);
 
     // steps.length - 1
     for(let i = 0; i < steps.length - 1; i++){
@@ -38,8 +63,6 @@ function Draw_Journey(){
         }
 
         let middle = false;
-
-        let gap = 10;
 
         if((i+1) % 2 == 1){ // Odd (Middle)
             pathStart = { x: firstStep.left-gap, y: stepVMiddle(firstStep) };
@@ -99,9 +122,7 @@ function Draw_Journey(){
         console.log("Y:", pathStart.y, "->", C1.y, "->", C2.y, "->", "*"+P2.y, "->", C3.y, "->", C4.y, "->", pathEnd.y);
         console.log()
 
-        const arrow_size = 16;
-
-        svgPath += `
+        svgPath = `
             M ${pathStart.x} ${pathStart.y}
             C ${C1.x} ${C1.y}, ${C2.x} ${C2.y}, ${P2.x} ${P2.y}
             C ${C3.x} ${C3.y}, ${C4.x} ${C4.y}, ${pathEnd.x} ${pathEnd.y}
@@ -109,22 +130,59 @@ function Draw_Journey(){
             M ${pathEnd.x} ${pathEnd.y} L ${middle ? pathEnd.x - arrow_size : pathEnd.x + arrow_size} ${pathEnd.y + arrow_size}
         `;
 
-        // const curveOffset = curvature * Math.sqrt(dx*dx + dy*dy);
+        let pathElement = pathTemplate(svgPath, i+1);
+        wrapper.innerHTML += pathElement;
+        wrapper.innerHTML += antImg(i+1);
 
-        
-        // svgPath += `
-        //     M ${pathStart.x} ${pathStart.y}
-        //     C ${C1.x} ${C1.y}, ${C2.x} ${C2.y}, ${P2.x} ${P2.y}
-        //     C ${C3.x} ${C3.y}, ${C4.x} ${C4.y}, ${pathEnd.x} ${pathEnd.y}
-        // `;
-        
     }
+    
+    // Add the ant pictures
+    for(let i = 1; i <= steps.length - 1; i++){
+        const lineElement = document.querySelector(`#segment-${i}`);
+        const antImage = document.querySelector(`#segment-pic-${i}`);
+        const totalLineLength = lineElement.getTotalLength();
 
-    document.querySelector('.journey-path').setAttribute('d', svgPath);
-    console.log("\n");
+        let antPosition;
+
+        console.log("Pattern (i):", i%4);
+
+        if(i%4 == 1 || i%4 == 2){
+            antPosition = lineElement.getPointAtLength(totalLineLength);
+        }else{
+            antPosition = lineElement.getPointAtLength(0);
+        }
+
+        // antImage.setAttribute('x', antPosition.x - (imageSize / 2)); 
+        // antImage.setAttribute('y', antPosition.y - imageSize);
+
+        // const imageBound = antImage.getBBox();
+
+        // if(i%4 == 3 || i%4 == 0){
+        //     antImage.setAttribute('transform', `translate(${imageBound.x + imageBound.width}, 0) scale(-1, 1)`);
+        // }
+
+        // Flip horizontally or not
+        const flip = (i % 4 === 1 || i % 4 === 0);
+        const even = (i % 2 == 0);
+        const firstTwo = (i % 4 === 1 || i % 4 === 2)
+        const lineEdgeSpace = 16;
+        console.log("FLIP:", flip);
+
+        // Compute the translation
+        let transformStr = `translate(${!even ? antPosition.x - imageSize_W - lineEdgeSpace : antPosition.x + lineEdgeSpace}, 
+            ${!firstTwo ? antPosition.y - imageSize_H : antPosition.y - imageSize_H - arrow_size})`; 
+        if(flip){
+            transformStr += ` translate(${imageSize_W}, 0) scale(-1, 1)`; // flip around left edge
+        }
+
+        antImage.setAttribute('transform', transformStr);
+
+        console.log("ANT:", i, antPosition);
+
+    }
 }
 
-export default function Journey(){
+export default function Journey({ children }){
 
     useEffect(() => {
         Draw_Journey();
@@ -134,14 +192,24 @@ export default function Journey(){
         <div className='learning-journey'>
             <h2>Your Learning Journey for Today</h2>
             <div className="journey">
-                <svg className="journey-lines">
-                    <path className="journey-path" />
-                    </svg>
-                <div className="step">Watch iOS Video</div>
-                <div className="step right">Visit iOS Web Page</div>
-                <div className="step">Do iOS Project</div>
-                <div className="step left">Watch App Development Video</div>
-                <div className="step">Visit App Development Web Page</div>
+                <svg className="journey-lines"></svg>
+
+                {React.Children.map(children, (child, index) => {
+                    const alternatingClass = (i) => {
+                        i += 1;
+                        if(i % 4 == 2){
+                            return "right";
+                        }else if(i % 4 == 0){
+                            return "left";
+                        }else{
+                            return "";
+                        }
+                    }
+                    return React.cloneElement(child, {
+                        className: `step ${alternatingClass(index)}`
+                    })
+                })}
+                
             </div>
         </div>
     )
