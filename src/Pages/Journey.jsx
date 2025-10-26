@@ -17,101 +17,111 @@ function Draw_Journey(){
         const startStep = steps[i].getBoundingClientRect();
         const endStep = steps[i+1].getBoundingClientRect();
 
-        const P1 = { 
+        const firstStep = { 
             top: (startStep.top - wrapperRect.top), 
             right: (startStep.right - wrapperRect.left), 
             left: (startStep.left - wrapperRect.left), 
             bottom: (startStep.bottom - wrapperRect.top)
         };
 
-        let P2;
-
-        const P3 = { 
+        const lastStep = { 
             top: (endStep.top - wrapperRect.top),
             right: (endStep.right - wrapperRect.left),
             bottom: (endStep.bottom - wrapperRect.top),
             left: (endStep.left - wrapperRect.left)
         };
 
-        let C1, C2, C3, C4;
+        let pathStart, pathEnd;
 
-        let pathStart;
-        let pathEnd;
-
-        const middleV = (path) => {
-            return ((path.bottom - path.top)/2 + path.top);
+        const stepVMiddle = (step) => {
+            return ((step.bottom - step.top)/2 + step.top);
         }
 
-        let offsetX = 100;
+        let middle = false;
 
+        let gap = 10;
 
-        if((i+1) % 2 == 1){ // Middle
-            pathStart = { x: P1.left, y: middleV(P1) };
-            pathEnd = { x: P3.left, y : middleV(P3) };
-
-            let offsetY = ((pathEnd.y - pathStart.y)/2 + pathStart.y);
-
-            // Path Middle
-            if(P1.left < P3.left){ // Child is to the right
-                P2 = {x: (pathStart.x - offsetX), y: offsetY};
-            }else{ //Child is to the left
-                P2 = {x: (pathEnd.x - offsetX), y: offsetY};
-            }
-
-            // Control point for segment P1 -> P2
-            C1 = { x: pathStart.x - 75, y: pathStart.y};
-            C2 = { x: P2.x, y: P2.y - 50};
-
-            // Control point for segment P2 -> P3
-            C3 = { x: C2.x, y: P2.y + 50};
-            C4 = { x: pathEnd.x - 75, y: pathEnd.y};
-
+        if((i+1) % 2 == 1){ // Odd (Middle)
+            pathStart = { x: firstStep.left-gap, y: stepVMiddle(firstStep) };
+            pathEnd = { x: lastStep.left-gap, y: stepVMiddle(lastStep) };
+            middle = true;
         }else{
-            pathStart = { x: P1.right, y: middleV(P1) };
-            pathEnd = { x: P3.right, y : middleV(P3) };
+            pathStart = { x: firstStep.right+gap, y: stepVMiddle(firstStep) };
+            pathEnd = { x: lastStep.right+gap, y: stepVMiddle(lastStep) };
+        }        
+        
+        // Define vector between start and end
+        // let dx = rightD ? 0 - Math.abs(pathEnd.x - pathStart.x) : Math.abs(pathEnd.x - pathStart.x);
+        let dx = pathEnd.x - pathStart.x;
 
-            let offsetY = ((pathEnd.y - pathStart.y)/2 + pathStart.y);
-
-            // Path Middle
-            if(P1.right < P3.right){ // Child is to the right
-                P2 = {x: (P3.right + offsetX), y: offsetY};
-            }else{ //Child is to the left
-                P2 = {x: (P1.right + offsetX), y: offsetY};
-            }
-
-            // Control point for segment P1 -> P2
-            C1 = { x: pathStart.x + 75, y: pathStart.y};
-            C2 = { x: P2.x, y: P2.y - 50};
-
-            // Control point for segment P2 -> P3
-            C3 = { x: C2.x, y: P2.y + 50};
-            C4 = { x: pathEnd.x + 75, y: pathEnd.y};
-
+        let endDeterminesOffset = false;
+        if(middle && firstStep.left > lastStep.left || !middle && firstStep.right < lastStep.right){
+            dx = -1 * dx;
+            endDeterminesOffset = true;
         }
 
-        // const C1 = { x: P1.x + offset, y: P1.y };
-        // const C2 = { x: P2.x - offset, y: P2.y };
+        const dy = pathEnd.y - pathStart.y;
 
-        // svgPath += `
-        //     M ${pathStart.x} ${pathStart.y}
-        //     C ${C1.x} ${C1.y}, ${C2.x} ${C2.y}, 
-        //     ${pathEnd.x} ${pathEnd.y}
-        // `;
+        const curvature = 0.5;
+        let curveOffsetX = dx * curvature;
+        // This will be the turning point of the "C" curve
+        let P2 = {
+            x: endDeterminesOffset ? pathEnd.x - curveOffsetX : pathStart.x - curveOffsetX,
+            y: (pathStart.y + pathEnd.y)/2,
+        };
+
+        // Assuming child to the right
+        const offsetWidth = endDeterminesOffset ? pathEnd.x - P2.x : pathStart.x - P2.x;
+
+
+        // 1st curve handles
+        const C1 = {
+            x: P2.x + (endDeterminesOffset ? offsetWidth : offsetWidth*0.5),
+            y: pathStart.y
+        };
+        const C2 = {
+            x: middle ? P2.x + 0 : P2.x + 0,
+            y: pathStart.y + dy * 0.15
+        };
+
+        // 2nd curve handles (mirror smooth)
+        const C3 = {
+            x: P2.x + (C2.x - P2.x),
+            y: pathEnd.y - dy * 0.15
+        };
+        
+        const C4 = {
+            x: P2.x + (endDeterminesOffset ? offsetWidth*0.75 : offsetWidth*0.5),
+            y: pathEnd.y
+        };
+        console.log("Part", i+1);
+        console.log("X:", pathStart.x, "->", C1.x, "->", C2.x, "->", "*"+P2.x, "->", C3.x, "->", C4.x, "->", pathEnd.x);
+        console.log("Y:", pathStart.y, "->", C1.y, "->", C2.y, "->", "*"+P2.y, "->", C3.y, "->", C4.y, "->", pathEnd.y);
+        console.log()
+
+        const arrow_size = 16;
 
         svgPath += `
             M ${pathStart.x} ${pathStart.y}
             C ${C1.x} ${C1.y}, ${C2.x} ${C2.y}, ${P2.x} ${P2.y}
             C ${C3.x} ${C3.y}, ${C4.x} ${C4.y}, ${pathEnd.x} ${pathEnd.y}
+            M ${pathEnd.x} ${pathEnd.y} L ${middle ? pathEnd.x - arrow_size : pathEnd.x + arrow_size} ${pathEnd.y - arrow_size}
+            M ${pathEnd.x} ${pathEnd.y} L ${middle ? pathEnd.x - arrow_size : pathEnd.x + arrow_size} ${pathEnd.y + arrow_size}
         `;
 
+        // const curveOffset = curvature * Math.sqrt(dx*dx + dy*dy);
 
-        console.log("Start:", P1.x, P1.y);
-        console.log("Curve A:", C1.x, C1.y);
-        console.log("Curve B:", C2.x, C2.y);
-        console.log("End:", P2.x, P2.y);
+        
+        // svgPath += `
+        //     M ${pathStart.x} ${pathStart.y}
+        //     C ${C1.x} ${C1.y}, ${C2.x} ${C2.y}, ${P2.x} ${P2.y}
+        //     C ${C3.x} ${C3.y}, ${C4.x} ${C4.y}, ${pathEnd.x} ${pathEnd.y}
+        // `;
+        
     }
 
     document.querySelector('.journey-path').setAttribute('d', svgPath);
+    console.log("\n");
 }
 
 export default function Journey(){
