@@ -3,7 +3,7 @@
     flex-direction: column;
     align-items: center;
     padding: 2rem;
-    gap: 4rem;
+    /* gap: 4rem; */
     width: 100%;
 }
 
@@ -15,6 +15,7 @@
     width: 100%;
     align-items: center;
     padding: 2rem;
+    padding-top: 6rem;
 }
 
 .journey .journey-lines{
@@ -46,6 +47,13 @@
     z-index: 2;
     font-size: 24px;
     text-align: center;
+
+    transition: transform 0.3s ease;
+}
+
+.journey .step:hover{
+    transform: scale(1.05);
+    cursor: pointer;
 }
 
 .journey .step.right{
