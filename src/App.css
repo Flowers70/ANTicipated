@@ -43,5 +43,5 @@ button{
 .line{
   width: 1000px;
   height: 3px;
-  background-color: var(--Green);
+  background-color: var(--lGreen);
 }
