@@ -10,7 +10,7 @@ function Draw_Journey(){
 
     const imageSize_W = 53;
     const imageSize_H = 25;
-    const antImg = (id) => { return `<image id='segment-pic-${id}' href='ant_005.png' width='${imageSize_W}px' height='${imageSize_H}px'></image>`};
+    const antImg = (id) => { return `<image id='segment-pic-${id}' href='ant_005.png' preserveAspectRatio='none' width='${imageSize_W}px' height='${imageSize_H}px'></image>`};
 
     const wrapper = document.querySelector('.journey-lines');
     const wrapperRect = wrapper.getBoundingClientRect();

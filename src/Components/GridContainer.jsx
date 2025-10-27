@@ -18,7 +18,7 @@ export default function GridContainer(props){
             <h2>{props.title}</h2>
             <div className='skills'>
                 {chunks.map((chunk, index) => (
-                    <div className='row'>
+                    <div key={index} className='row'>
                         {chunk}
                     </div>
                 ))}
