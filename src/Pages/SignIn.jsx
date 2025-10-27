@@ -7,7 +7,7 @@ import { signInWithPopup } from "firebase/auth";
 import { auth, googleProvider } from '../firebase'; // Import the initialized auth and provider
 import { useEffect } from 'react';
 
-import { useAuth } from '../contexts/AuthContext';
+import { useAuth } from '../Contexts/AuthContext';
 import { useNavigate } from 'react-router-dom';
 
 export default function SignIn(){
