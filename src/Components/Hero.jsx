@@ -1,18 +1,7 @@
+import Header from './Header';
 import './Hero.css';
 
 export default function Hero(){
-    function Header(){
-        return (
-            <div className='logo-title'>
-                <img className='flip-ant' src="ant_005.png"></img>
-                <div>
-                    <h1>ANTicipated</h1>
-                    <h2>Curated learning for your career growth</h2>
-                </div>
-            </div>
-        )
-    }
-
     function Card(){
         return (
             <div className='profile-card'>
@@ -61,7 +50,9 @@ export default function Hero(){
                         <h2 className='half-opacity'>Video of the Day:</h2>
                         <h2>How I learned iOS Development in 30 Days? 0 to Pro!</h2>
                     </div>          
-                    <div className='yt-video'></div>
+                    <div className='yt-video'>
+                        <iframe src="https://www.youtube.com/embed/CuB3dg8F3sY?si=fU_H1udQhyGG04rj" title="YouTube video player" frameBorder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerPolicy="strict-origin-when-cross-origin" allowFullScreen></iframe>
+                    </div>
                     </div>
                 </div>        
             </div>

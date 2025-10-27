@@ -10,4 +10,11 @@ export default defineConfig({
       },
     }),
   ],
+
+  server: {
+    headers: {
+      // This allows the main window to check the status of the pop-up
+      'Cross-Origin-Opener-Policy': 'same-origin-allow-popups',
+    },
+  },
 })
