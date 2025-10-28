@@ -2,7 +2,8 @@
 
 import React, { createContext, useState, useEffect, useContext } from 'react';
 import { onAuthStateChanged } from 'firebase/auth';
-import { auth, signOut } from '../firebase'; // Import the initialized auth object
+import { auth, signOut, db } from '../firebase'; // Import the initialized auth object
+import { doc, setDoc, getDoc } from 'firebase/firestore';
 
 // 1. Create the Context
 // Note to self: Context allows a React component to share it's props with all it's children, grandchildren, and so on.
@@ -22,11 +23,25 @@ export const useAuth = () => useContext(AuthContext);
 export const AuthProvider = ({ children }) => {
   const [currentUser, setCurrentUser] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [currentUserProfile, setCurrentUserProfile] = useState(null);
 
   useEffect(() => {
     // This listener runs once on mount, and then again on login/logout
-    const unsubscribe = onAuthStateChanged(auth, (user) => {
+    const unsubscribe = onAuthStateChanged(auth, async (user) => {
       setCurrentUser(user);
+
+      if(user){
+        // Retrieve user data
+        const userRef = doc(db, "users", user.uid);
+        const userDoc = await getDoc(userRef);
+
+        if (userDoc.exists()) {
+          setCurrentUserProfile(userDoc.data());
+        }
+      }else{
+        setCurrentUserProfile(null);
+      }
+
       setLoading(false); // We know the state (logged in or out)
     });
 
@@ -38,10 +53,16 @@ export const AuthProvider = ({ children }) => {
     return signOut(auth); // Firebase signOut returns a promise
   };
 
+  const updateProfileState = (newProfileData) => {
+    setCurrentUserProfile(newProfileData);
+  };
+
   const value = {
     currentUser,
+    currentUserProfile,
     loading,
-    logout
+    logout,
+    updateProfileState
   };
 
   return (

@@ -1,13 +1,16 @@
+import { useAuth } from '../Contexts/AuthContext';
 import Header from './Header';
 import './Hero.css';
 
 export default function Hero(){
+    const { currentUser } = useAuth();
+
     function Card(){
         return (
             <div className='profile-card'>
                 <div className='frame4'>
                     <div>
-                    <h2>Hello Mary!</h2>
+                    <h2>Hello {currentUser.displayName}!</h2>
                     <div>
                         <h3>Your top skills:</h3>
                         <ul>

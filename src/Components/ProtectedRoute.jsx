@@ -5,7 +5,7 @@ import { Navigate } from 'react-router-dom';
 import { useAuth } from '../Contexts/AuthContext'; 
 
 const ProtectedRoute = ({ children }) => {
-  const { currentUser, loading } = useAuth();
+  const { currentUser, currentUserProfile, loading } = useAuth();
 
   // 1. Show a loading state while Firebase checks the user status
   if (loading) {
@@ -15,6 +15,10 @@ const ProtectedRoute = ({ children }) => {
   // 2. If the user is NOT logged in, redirect them to the sign-in page
   if (!currentUser) {
     return <Navigate to="/sign-in" replace />;
+  }
+
+  if (currentUserProfile && currentUserProfile.completedSetup === false){
+    return <Navigate to="/setup" replace />;
   }
 
   // 3. If the user IS logged in, render the main application content

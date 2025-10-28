@@ -3,12 +3,14 @@
 import Header from '../Components/Header';
 import './SignIn.css';
 
-import { signInWithPopup } from "firebase/auth";
-import { auth, googleProvider } from '../firebase'; // Import the initialized auth and provider
+import { getAdditionalUserInfo, signInWithPopup } from "firebase/auth";
+import { auth, googleProvider, db } from '../firebase'; // Import the initialized auth and provider
 import { useEffect } from 'react';
 
 import { useAuth } from '../Contexts/AuthContext';
 import { useNavigate } from 'react-router-dom';
+
+import { doc, setDoc, getDoc } from 'firebase/firestore';
 
 export default function SignIn(){
     const { currentUser } = useAuth();
@@ -17,6 +19,37 @@ export default function SignIn(){
     const handleGoogleSignIn = async () => {
         try {
             const result = await signInWithPopup(auth, googleProvider);
+
+            const user = result.user;
+
+            // 1. Get a reference to the user's document using their UID
+            const userRef = doc(db, "users", user.uid);
+            
+            // 2. Attempt to fetch the document
+            const userDoc = await getDoc(userRef);
+
+            if(userDoc.exists()){
+                // Returning user
+                console.log("Welcome back, user document already exists.");
+                await updateDoc(userRef, {
+                    lastLogin: user.metadata.lastSignInTime, // Updates ONLY this field
+                });
+
+            }else{
+                console.log("New user! Setting up profile...");
+
+                // This line performs the write operation. 
+                // If the 'users' collection doesn't exist yet, Firestore creates it.
+                await setDoc(userRef, {
+                    uid: user.uid,
+                    email: user.email,
+                    displayName: user.displayName,
+                    createdAt: new Date(),
+                    lastLogin: new Date(),
+                    completedSetup: false
+                });
+            }
+
             // The user object is in result.user
             console.log("Sign-in successful!", result.user); 
             // After success, the Auth Listener (Step 3) will handle the redirect.
