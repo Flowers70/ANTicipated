@@ -8,7 +8,10 @@ import { useNavigate } from 'react-router-dom';
 import LogOut from '../Components/LogOut';
 
 
-export default function Home(){    
+export default function Home(){
+    const { currentUser } = useAuth();
+    
+    console.log(currentUser.displayName);
     return (
         <>
             <Hero/>
@@ -27,8 +30,10 @@ export default function Home(){
             <div className='line'></div>
 
             <Skills/>
-            <a className='attribution' href="https://www.vecteezy.com/free-vector/ant" target="_blank">Ant Vectors by Vecteezy</a>
+
             <LogOut/>
+
+            <a className='attribution' href="https://www.vecteezy.com/free-vector/ant" target="_blank">Ant Vectors by Vecteezy</a>
         </>
     );
 }

@@ -47,6 +47,13 @@ button:hover{
   cursor: pointer;
 }
 
+input{
+  border: 1px solid var(--lGray);
+  border-radius: 5px;
+  padding: 12px 16px 12px 16px;
+  font-size: 18px;
+}
+
 .line{
   width: 1000px;
   height: 3px;

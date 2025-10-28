@@ -7,7 +7,7 @@ import { BrowserRouter, Routes, Route} from 'react-router-dom';
 import Home from './Pages/Home';
 import SignIn from './Pages/SignIn';
 import ProtectedRoute from './Components/ProtectedRoute';
-import Header from './Components/Header';
+import Setup from './Pages/Setup';
 
 function App() {
   const [count, setCount] = useState(0)
@@ -18,7 +18,7 @@ function App() {
         <Routes>
           <Route path="/" element={<ProtectedRoute><Home/></ProtectedRoute>} />
           <Route path="/sign-in" element={<SignIn/>} />
-          <Route path="/test" element={<ProtectedRoute><Header/></ProtectedRoute>} />
+          <Route path="/setup" element={<Setup/>} />
         </Routes>
       </BrowserRouter>
     </>
