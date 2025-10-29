@@ -25,3 +25,16 @@ h1{
     font-family: "Montserrat", sans-serif;
     font-weight: normal;
 }
+
+@media (max-width: 768px){
+    .logo-title{
+        width: 100%;
+        flex-direction: column;
+        gap: 0;
+    }
+
+    .logo-title div{
+        align-items: center;
+        text-align: center;
+    }
+}
