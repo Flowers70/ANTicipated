@@ -1,54 +1,72 @@
 import Header from "../Components/Header";
 import { useAuth } from "../Contexts/AuthContext";
 import { db } from "../firebase";
-import { doc, setDoc, getDoc, updateDoc } from 'firebase/firestore';
+import { doc, setDoc, getDoc, updateDoc, addDoc, collection } from 'firebase/firestore';
 
 import './Setup.css';
 import { useNavigate } from "react-router-dom";
+import { useEffect } from "react";
 
 export default function Setup(){
     const { currentUserProfile, updateProfileState } = useAuth();
     const navigate = useNavigate();
 
+    useEffect(() => {
+        // If the profile data is loaded AND setup is complete, navigate to home
+        if (currentUserProfile && currentUserProfile.completedSetup === true) {
+            navigate('/'); 
+        }
+    }, [currentUserProfile, navigate]);
+
     const handleSetup = async () => {
         const dreamJobsInput = document.getElementById("dreamJob").value;
         const currentSkillsInput = document.getElementById("currentSkills").value;
 
-        const dreamJobsA = dreamJobsInput.split(", ");
-        const currentSkillsA = currentSkillsInput.split(", ");
+        const dreamJobsA = dreamJobsInput.trim().split(", ");
+        const currentSkillsA = currentSkillsInput.trim().split(", ");
 
         // 1. Get a reference to the user's document using their UID
-        const knowledgeBaseRef = doc(db, "knowledge-base", currentUserProfile.uid);
-            
-        // 2. Attempt to fetch the document
-        const knowledgeBaseDoc = await getDoc(knowledgeBaseRef);
+        const userRef = doc(db, "users", currentUserProfile.uid);
 
-        if(knowledgeBaseDoc.exists()){
-            // Update
-            await updateDoc(knowledgeBaseRef, {
-                dreamJobs: dreamJobsA,
-                currentSkills: currentSkillsA
-            });
-        }else{
-            // Create
-            await setDoc(knowledgeBaseRef, {
-                uid: currentUserProfile.uid,
-                dreamJobs: dreamJobsA,
-                currentSkills: currentSkillsA
-            });
+        const skillRef = collection(userRef, "skills");
+        const dreamJobRef = collection(userRef, "dreamJobs");
 
-            await updateDoc(doc(db, "users", currentUserProfile.uid), {
+        const dreamJobPromises = dreamJobsA.map(jobName => {
+            const newDreamJob = {
+                name: jobName
+            }
+
+            return addDoc(dreamJobRef, newDreamJob);
+        })
+
+        const skillPromises = currentSkillsA.map(skillName => {
+            const newSkill = {
+                name: skillName,
+                progress: 100,
+                ranking: 1,
+                complete: true
+            }
+
+            return addDoc(skillRef, newSkill);
+        })
+
+        try {
+            await Promise.all([...dreamJobPromises, ...skillPromises]);
+
+            await updateDoc(userRef, {
                 completedSetup: true
             });
-
+    
             updateProfileState({
                 ...currentUserProfile, // Keep existing profile data
                 completedSetup: true   // Force the new value
             });
 
+            navigate("/");
+        } catch(error){
+            console.log("ERROR:", error);
         }
 
-        navigate("/");
     }
 
     return(
