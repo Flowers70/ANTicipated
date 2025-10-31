@@ -1,8 +1,10 @@
+import { useEffect, useRef, useState } from 'react';
+import { useLayoutEffect } from 'react';
 import { useAuth } from '../Contexts/AuthContext';
 import Header from './Header';
 import './Hero.css';
 
-export default function Hero(){
+export default function Hero({highlights}){
     const { currentUser } = useAuth();
 
     function Card(){
@@ -32,30 +34,44 @@ export default function Hero(){
         )
     }
 
+    const firstDivRef = useRef(null);
+    const [width, setWidth] = useState(0);
+
+    useEffect(() => {
+        if(firstDivRef.current){
+            const width = firstDivRef.current.offsetWidth;
+            setWidth(width);
+        }
+    }, [highlights]);
+
     return (
         <>
             <div className='hero'>
                 <div className='frame10'>
                     <div className='left'>
-                    {/* Site Logo and Title */}
-                    <Header/>
+                        <div ref={firstDivRef} className='width-determiner'>
+                            {/* Site Logo and Title */}
+                            <Header/>
 
-                    {/* Profile Card */}
-                    <Card/>
+                            {/* Profile Card */}
+                            <Card/>
+                        </div>                    
 
-                    <button>
-                        <span className='half-opacity'>Web Page of the Day:</span>
-                        <span>Learn to become an iOS developer</span>
-                    </button>
+                        <a href={highlights?.page?.url ?? ""} target="_blank">
+                            <button style={{width}} href={highlights?.page?.url ?? ""}>
+                                <span className='half-opacity'>Web Page of the Day:</span>
+                                <span>{highlights?.page?.title ?? "loading..."}</span>
+                            </button>
+                        </a>
                     </div>
                     <div className='right'>
-                    <div>
-                        <h2 className='half-opacity'>Video of the Day:</h2>
-                        <h2>How I learned iOS Development in 30 Days? 0 to Pro!</h2>
-                    </div>          
-                    <div className='yt-video'>
-                        <iframe src="https://www.youtube.com/embed/CuB3dg8F3sY?si=fU_H1udQhyGG04rj" title="YouTube video player" frameBorder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerPolicy="strict-origin-when-cross-origin" allowFullScreen></iframe>
-                    </div>
+                        <div className='vid-name'>
+                            <h2 className='half-opacity'>Video of the Day:</h2>
+                            <h2>{highlights?.vid?.title ?? "loading..."}</h2>
+                        </div>          
+                        <div className='yt-video'>
+                            <iframe src={`https://www.youtube.com/embed/${highlights?.vid?.url ?? ""}`} title="YouTube video player" frameBorder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerPolicy="strict-origin-when-cross-origin" allowFullScreen></iframe>
+                        </div>
                     </div>
                 </div>        
             </div>

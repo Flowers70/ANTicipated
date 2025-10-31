@@ -1,4 +1,7 @@
 import React, { useEffect } from "react";
+import { useState } from "react";
+import { useLayoutEffect } from "react";
+import { useRef } from "react";
 import "./Journey.css";
 
 function Draw_Journey(){
@@ -16,8 +19,6 @@ function Draw_Journey(){
     const wrapperRect = wrapper.getBoundingClientRect();
     wrapper.innerHTML = "";
 
-    console.log("Bouding Box:", wrapperRect.top, wrapperRect.right, wrapperRect.bottom, wrapperRect.left);
-
     const gap = 10;
     const arrow_size = 12;
 
@@ -34,8 +35,6 @@ function Draw_Journey(){
 
     let pathElement = pathTemplate(svgPath, 0);
     wrapper.innerHTML += pathElement;
-
-    console.log("SVG:", svgPath);
 
     // steps.length - 1
     for(let i = 0; i < steps.length - 1; i++){
@@ -117,10 +116,6 @@ function Draw_Journey(){
             x: P2.x + (endDeterminesOffset ? offsetWidth*0.75 : offsetWidth*0.5),
             y: pathEnd.y
         };
-        console.log("Part", i+1);
-        console.log("X:", pathStart.x, "->", C1.x, "->", C2.x, "->", "*"+P2.x, "->", C3.x, "->", C4.x, "->", pathEnd.x);
-        console.log("Y:", pathStart.y, "->", C1.y, "->", C2.y, "->", "*"+P2.y, "->", C3.y, "->", C4.y, "->", pathEnd.y);
-        console.log()
 
         svgPath = `
             M ${pathStart.x} ${pathStart.y}
@@ -144,8 +139,6 @@ function Draw_Journey(){
 
         let antPosition;
 
-        console.log("Pattern (i):", i%4);
-
         if(i%4 == 1 || i%4 == 2){
             antPosition = lineElement.getPointAtLength(totalLineLength);
         }else{
@@ -166,7 +159,6 @@ function Draw_Journey(){
         const even = (i % 2 == 0);
         const firstTwo = (i % 4 === 1 || i % 4 === 2)
         const lineEdgeSpace = 16;
-        console.log("FLIP:", flip);
 
         // Compute the translation
         let transformStr = `translate(${!even ? antPosition.x - imageSize_W - lineEdgeSpace : antPosition.x + lineEdgeSpace}, 
@@ -177,23 +169,41 @@ function Draw_Journey(){
 
         antImage.setAttribute('transform', transformStr);
 
-        console.log("ANT:", i, antPosition);
-
     }
 }
 
 export default function Journey({ children }){
+    console.log("Journey effect running...");
+    const containerRef = useRef(null);
+    const [loadingSteps, setLoadingSteps] = useState(true);
 
-    useEffect(() => {
-        Draw_Journey();
-    }, []);
+    useLayoutEffect(() => {
+        const container = containerRef.current;
+        if(!container){
+            console.log("No container found");
+            return;
+        };
+
+        console.log("Container ready:", container);
+
+        const steps = container.querySelectorAll(".step");
+
+        if(steps.length > 0){
+            setLoadingSteps(false);
+            Draw_Journey();
+        }
+
+        // if(React.Children.count(children) > 0){
+        //     Draw_Journey();
+        // }
+    }, [children]);
 
     return (
         <div className='learning-journey'>
             <h2>Your Learning Journey for Today</h2>
-            <div className="journey">
+            <div className="journey" ref={containerRef}>
                 <svg className="journey-lines"></svg>
-
+                {loadingSteps && <div className="loading">Loading your journey...</div>}
                 {React.Children.map(children, (child, index) => {
                     const alternatingClass = (i) => {
                         i += 1;
