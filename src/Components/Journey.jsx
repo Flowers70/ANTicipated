@@ -177,7 +177,7 @@ export default function Journey({ children }){
     const containerRef = useRef(null);
     const [loadingSteps, setLoadingSteps] = useState(true);
 
-    useEffect(() => {
+    useLayoutEffect(() => {
         const container = containerRef.current;
         if (!container) return;
 
