@@ -44,37 +44,43 @@ export default function Hero({highlights}){
         }
     }, [highlights]);
 
-    return (
-        <>
-            <div className='hero'>
-                <div className='frame10'>
-                    <div className='left'>
-                        <div ref={firstDivRef} className='width-determiner'>
-                            {/* Site Logo and Title */}
-                            <Header/>
 
-                            {/* Profile Card */}
-                            <Card/>
-                        </div>                    
-
-                        <a href={highlights?.page?.url ?? null} target="_blank">
-                            <button style={{width}}>
-                                <span className='half-opacity'>Web Page of the Day:</span>
-                                <span>{highlights?.page?.title ?? null}</span>
-                            </button>
-                        </a>
-                    </div>
-                    <div className='right'>
-                        <div className='vid-name'>
-                            <h2 className='half-opacity'>Video of the Day:</h2>
-                            <h2>{highlights?.vid?.title ?? "loading..."}</h2>
-                        </div>          
-                        <div className='yt-video'>
-                            <iframe src={`https://www.youtube.com/embed/${highlights?.vid?.url ?? null}`} title="YouTube video player" frameBorder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerPolicy="strict-origin-when-cross-origin" allowFullScreen></iframe>
+    if(highlights != null){
+        return (
+            <>
+                <div className='hero'>
+                    <div className='frame10'>
+                        <div className='left'>
+                            <div ref={firstDivRef} className='width-determiner'>
+                                {/* Site Logo and Title */}
+                                <Header/>
+    
+                                {/* Profile Card */}
+                                <Card/>
+                            </div>                    
+    
+                            <a href={highlights?.page?.url ?? null} target="_blank">
+                                <button style={{width}}>
+                                    <span className='half-opacity'>Web Page of the Day:</span>
+                                    <span>{highlights?.page?.title ?? null}</span>
+                                </button>
+                            </a>
                         </div>
-                    </div>
-                </div>        
-            </div>
-        </>
-    )
+                        <div className='right'>
+                            <div className='vid-name'>
+                                <h2 className='half-opacity'>Video of the Day:</h2>
+                                <h2>{highlights?.vid?.title ?? "loading..."}</h2>
+                            </div>          
+                            <div className='yt-video'>
+                                <iframe src={`https://www.youtube.com/embed/${highlights?.vid?.url ?? null}`} title="YouTube video player" frameBorder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerPolicy="strict-origin-when-cross-origin" allowFullScreen></iframe>
+                            </div>
+                        </div>
+                    </div>        
+                </div>
+            </>
+        )
+    }else{
+        return (<div className='hero'>Loading content...</div>);
+    }
+    
 }
