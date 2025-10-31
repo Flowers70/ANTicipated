@@ -57,10 +57,10 @@ export default function Hero({highlights}){
                             <Card/>
                         </div>                    
 
-                        <a href={highlights?.page?.url ?? ""} target="_blank">
-                            <button style={{width}} href={highlights?.page?.url ?? ""}>
+                        <a href={highlights?.page?.url ?? null} target="_blank">
+                            <button style={{width}}>
                                 <span className='half-opacity'>Web Page of the Day:</span>
-                                <span>{highlights?.page?.title ?? "loading..."}</span>
+                                <span>{highlights?.page?.title ?? null}</span>
                             </button>
                         </a>
                     </div>
@@ -70,7 +70,7 @@ export default function Hero({highlights}){
                             <h2>{highlights?.vid?.title ?? "loading..."}</h2>
                         </div>          
                         <div className='yt-video'>
-                            <iframe src={`https://www.youtube.com/embed/${highlights?.vid?.url ?? ""}`} title="YouTube video player" frameBorder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerPolicy="strict-origin-when-cross-origin" allowFullScreen></iframe>
+                            <iframe src={`https://www.youtube.com/embed/${highlights?.vid?.url ?? null}`} title="YouTube video player" frameBorder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerPolicy="strict-origin-when-cross-origin" allowFullScreen></iframe>
                         </div>
                     </div>
                 </div>        

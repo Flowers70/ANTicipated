@@ -177,25 +177,21 @@ export default function Journey({ children }){
     const containerRef = useRef(null);
     const [loadingSteps, setLoadingSteps] = useState(true);
 
-    useLayoutEffect(() => {
+    useEffect(() => {
         const container = containerRef.current;
-        if(!container){
-            console.log("No container found");
-            return;
-        };
+        if (!container) return;
 
-        console.log("Container ready:", container);
-
-        const steps = container.querySelectorAll(".step");
-
-        if(steps.length > 0){
+        // initial draw (after paint)
+        requestAnimationFrame(() => {
+            Draw_Journey()
             setLoadingSteps(false);
-            Draw_Journey();
-        }
+        });
 
-        // if(React.Children.count(children) > 0){
-        //     Draw_Journey();
-        // }
+        // re-draw when the container changes size
+        const resizeObserver = new ResizeObserver(() => Draw_Journey());
+        resizeObserver.observe(container);
+
+        return () => resizeObserver.disconnect();
     }, [children]);
 
     return (
