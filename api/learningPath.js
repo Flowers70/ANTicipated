@@ -41,9 +41,6 @@ export default async function handler(req, res){
     if (!dreamJob || !skills) {
         return res.status(400).json({ error: 'Missing required fields: dreamJob or skills.' });
     }
-    console.log("DREAM JOB:", dreamJob);
-    console.log("SKILLS:", skills);
-
 
     const today = new Date();
     const learningPathsRef = db.collection("learningPaths").doc(userId);

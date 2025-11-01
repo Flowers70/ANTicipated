@@ -16,6 +16,7 @@ export default function Home(){
     const { currentUser, currentUserProfile, loading } = useAuth();
     const [highlights, setHighlights] = useState(null);
     const [learningJourney, setLearningJourney] = useState([]);
+    const [learnings, setLearnings] = useState([]);
     
     console.log(currentUser.displayName);
 
@@ -60,6 +61,22 @@ export default function Home(){
 
                         todaysJourney.webResources.forEach(page => pages.push(page));
                         todaysJourney.videoResources.forEach(vid => vids.push(vid));
+
+                        // Generate Learning Recap
+                        const learningRecap_response = await fetch('/api/learningRecap', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                // Send the token in the Authorization header
+                                'Authorization': `Bearer ${userToken}`, 
+                            },
+                            body: JSON.stringify({ 
+                                pages
+                            }),
+                        });
+
+                        const learningRecap_data = await learningRecap_response.json();
+                        setLearnings(learningRecap_data);
 
                         let highlight = {
                             page: pages.splice(0, 1)[0],
@@ -115,7 +132,7 @@ export default function Home(){
             </Journey>
             <div className='line'></div>
 
-            <Learning_Recap/>
+            <Learning_Recap learnings={learnings} />
             <div className='line'></div>
 
             <Skills/>
