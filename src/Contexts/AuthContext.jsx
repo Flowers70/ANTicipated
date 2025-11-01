@@ -37,11 +37,21 @@ export const AuthProvider = ({ children }) => {
       if(user){
         // Retrieve user data
         const userRef = doc(db, "users", user.uid);
-        const userDoc = await getDoc(userRef);
+        // const userDoc = await getDoc(userRef);
 
-        if (userDoc.exists()) {
-          setCurrentUserProfile(userDoc.data());
-        }
+        unsubscribeFirestore = onSnapshot(userRef, (doc) => {
+          if (doc.exists()) {
+              console.log("Returning User");
+              setCurrentUserProfile(doc.data());
+          } else {
+              // Crucial for new users who sign in but haven't created the document yet
+              setCurrentUserProfile(null); 
+          }
+        }, 
+        (error) => {
+            console.error("Firestore snapshot error:", error);
+            setCurrentUserProfile(null);
+        });
       }else{
         setCurrentUserProfile(null);
       }
@@ -50,7 +60,10 @@ export const AuthProvider = ({ children }) => {
     });
 
     // Cleanup the listener when the component unmounts
-    return unsubscribe;
+    return () => {
+      unsubscribe();
+      unsubscribeFirestore();
+    };
   }, []);
 
   const logout = () => {

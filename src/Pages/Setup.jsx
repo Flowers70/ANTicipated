@@ -73,7 +73,7 @@ export default function Setup(){
         <div className="setup">
             <Header/>
             <div className="form">
-                <h3>Hello {currentUserProfile.displayName}</h3>
+                <h3>Hello {currentUserProfile?.displayName ?? "Anonymous"}</h3>
                 <div className="value">
                     <label htmlFor="dreamJob">Enter your dream job title(s)</label>
                     <input id="dreamJob" type="text"></input>
