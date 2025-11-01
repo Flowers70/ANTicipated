@@ -2,9 +2,23 @@ import { useState } from 'react';
 import { useEffect } from 'react';
 import './Learning_Recap.css';
 
+import { marked} from 'marked';
+import { useRef } from 'react';
+
 export default function Learning_Recap({learnings}){
-    const [learningRecapSummary, setLearningRecapSummary] = useState("");
+    const [learningRecapSummary, setLearningRecapSummary] = useState(null);
+    const buttonRef = useRef(null);
+    const [loading, setLoading] = useState(false);
+
+    const handleRecapGeneration = () => {
+        buttonRef.current.disabled = true;
+        setLoading(true);
+        recapSummarizer();
+    }
+
     const recapSummarizer = async () => {
+        buttonRef.disabled = true;
+
         if ('Summarizer' in self && learnings != []) {
             console.log("Summarizer found");
             // The Summarizer API is supported.
@@ -16,7 +30,7 @@ export default function Learning_Recap({learnings}){
             }
 
             const options = {
-                sharedContext: 'This is a scientific article',
+                sharedContext: 'This is a learning article',
                 type: 'key-points',
                 format: 'markdown',
                 length: 'medium',
@@ -43,10 +57,9 @@ export default function Learning_Recap({learnings}){
                 let summary;
                 summarizer.summarize(longText).then((summarized) => {
                     summary = summarized;
+                    setLearningRecapSummary(marked.parse(summary));
                     console.log("SUMMARY B:", summary);
-                })
-
-                console.log("SUMMARY:", summary);
+                }).catch(err => console.log("Summary FAILED:", err));
             }
         }
     }
@@ -59,8 +72,9 @@ export default function Learning_Recap({learnings}){
         <div className='learning-recap'>
             <h2>Your Learning Recap</h2>
             <div className='recap'>             
-                <button onClick={recapSummarizer}>Click Me!</button>
-                {learningRecapSummary ?? "loading..."}
+                {learningRecapSummary !== null ? <div dangerouslySetInnerHTML={{__html: learningRecapSummary}} /> : <button ref={buttonRef} onClick={handleRecapGeneration}>Generate Recap!</button>}
+                {(learningRecapSummary === null && loading) ? <div>loading...</div> : ""}
+                {/* {learningRecapSummary ?? "loading..."} */}
             </div>
         </div>
     );

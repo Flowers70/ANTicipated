@@ -12,7 +12,7 @@ export default function Hero({highlights}){
             <div className='profile-card'>
                 <div className='frame4'>
                     <div>
-                    <h2>Hello {currentUser.displayName}!</h2>
+                    <h2>Hello {currentUser.displayName ?? "Anonymous"}!</h2>
                     <div>
                         <h3>Your top skills:</h3>
                         <ul>
