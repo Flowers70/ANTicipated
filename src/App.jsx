@@ -8,8 +8,6 @@ import ProtectedRoute from './Components/ProtectedRoute';
 import Setup from './Pages/Setup';
 
 function App() {
-  const [count, setCount] = useState(0)
-
   return (
     <>
       <BrowserRouter>

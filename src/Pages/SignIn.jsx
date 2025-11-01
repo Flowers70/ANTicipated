@@ -11,9 +11,11 @@ import { useAuth } from '../Contexts/AuthContext';
 import { useNavigate } from 'react-router-dom';
 
 import { doc, setDoc, getDoc, updateDoc } from 'firebase/firestore';
+import { useState } from 'react';
 
 export default function SignIn(){
     const { currentUser, currentUserProfile } = useAuth();
+    const [loading, setLoading] = useState(true);
     const navigate = useNavigate();
 
     const successfulSignIn = async (user) => {
@@ -44,10 +46,9 @@ export default function SignIn(){
                 completedSetup: false
             });
         }
-
+        setLoading(false);
          // The user object is in result.user
          console.log("Sign-in successful!"); 
-         navigate("/setup");
     }
 
     const handleAnonSignIn = async () => {
@@ -73,10 +74,20 @@ export default function SignIn(){
     };
 
     useEffect(() => {
-        if(currentUser && currentUserProfile){
-            currentUserProfile.completedSetup ? navigate("/") : navigate("/setup");
+        // Wait until loading is false and we have an authenticated user
+        if (currentUser && !currentUserProfile && !loading) {
+            // User is logged in, but we haven't fetched their profile yet (brief moment)
+            return; 
         }
-    }, [currentUser, currentUserProfile]);
+        
+        if (currentUserProfile && currentUserProfile.completedSetup === false) {
+            // Logged-in user needs to finish setup
+            navigate("/setup");
+        } else if (currentUserProfile && currentUserProfile.completedSetup === true) {
+            // Logged-in user is done with setup
+            navigate("/");
+        }
+    }, [currentUser, currentUserProfile, loading]);
 
     return (
         <div className='sign-in'>

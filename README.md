@@ -16,7 +16,7 @@ ANTicipated compiles free learning resources on valuable skills in a specific fi
     * [Cloud Firestore API](https://cloud.google.com/products/firestore?hl=en_US)
     * [Firebase Installations API](https://firebase.google.com/)
 
-Users authenticated with Google's [OAuth](https://developers.google.com/identity/protocols/oauth2)
+Users' authenticated with Google's [OAuth](https://developers.google.com/identity/protocols/oauth2)
 
 ## ANTicipated Features & Functionality
 The following is organized following the repositories file structure.

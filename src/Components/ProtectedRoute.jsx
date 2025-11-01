@@ -17,9 +17,11 @@ const ProtectedRoute = ({ children }) => {
     return <Navigate to="/sign-in" replace />;
   }
 
-  if (currentUserProfile && currentUserProfile.completedSetup === false){
+  if (currentUserProfile && currentUserProfile.completedSetup === false || !currentUserProfile){
     return <Navigate to="/setup" replace />;
   }
+
+  console.log("PR: Current User:", currentUserProfile);
 
   // 3. If the user IS logged in, render the main application content
   return children;
