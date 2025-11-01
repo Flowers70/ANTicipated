@@ -3,7 +3,7 @@
 import React, { createContext, useState, useEffect, useContext } from 'react';
 import { onAuthStateChanged } from 'firebase/auth';
 import { auth, signOut, db } from '../firebase'; // Import the initialized auth object
-import { doc, setDoc, getDoc } from 'firebase/firestore';
+import { doc, setDoc, getDoc, onSnapshot } from 'firebase/firestore';
 
 // 1. Create the Context
 // Note to self: Context allows a React component to share it's props with all it's children, grandchildren, and so on.
@@ -26,8 +26,12 @@ export const AuthProvider = ({ children }) => {
   const [currentUserProfile, setCurrentUserProfile] = useState(null);
 
   useEffect(() => {
+    // Keeps track of the Firestore listener cleanup function
+    let unsubscribeFirestore = () => {};
+
     // This listener runs once on mount, and then again on login/logout
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
+      unsubscribeFirestore();
       setCurrentUser(user);
 
       if(user){

@@ -1,4 +1,4 @@
-import { collection, query, where, getDocs, doc } from 'firebase/firestore';
+import { collection, query, where, getDocs, doc, limit } from 'firebase/firestore';
 import { db } from '../firebase';
 
 async function getSkills(userId, completed=true){
@@ -26,4 +26,36 @@ async function getSkills(userId, completed=true){
     }));
 }
 
-export {getSkills};
+async function getDreamJob(userId){
+    if (!userId) {
+        console.error("Query aborted: User ID is required.");
+        return [];
+    }
+
+    const userRef = doc(db, "users", userId);
+    const dreamJobsRef = collection(userRef, "dreamJobs");
+
+    const queryDreams = query(
+        dreamJobsRef,
+        limit(1)
+    );
+
+    const dreamJobs = await getDocs(queryDreams);
+
+    if(dreamJobs.empty){
+        return {
+            name: "Software Engineer"
+        }
+    }
+
+    const dreamData = {
+        ...dreamJobs.docs[0].data()
+    };
+
+    return dreamData;
+}
+
+export {
+    getSkills,
+    getDreamJob
+};

@@ -8,7 +8,7 @@ import { useNavigate } from 'react-router-dom';
 import LogOut from '../Components/LogOut';
 import { useEffect } from 'react';
 
-import { getSkills } from '../Services/firestoreServices';
+import { getDreamJob, getSkills } from '../Services/firestoreServices';
 import { useState } from 'react';
 
 
@@ -29,10 +29,17 @@ export default function Home(){
                     console.log("Skills obtained (home):", inProgress);
                     return inProgress;
                 }
+
+                const retrieveDreamJobs = async () => {
+                    const inProgress = await getDreamJob(currentUserProfile.uid);
+                    console.log("DREAM:", inProgress);
+                    return inProgress;
+                }
         
                 const sendRequest = async () => {
                     const userSkills = await retrieveSkills();    
                     const userToken = await currentUser.getIdToken();
+                    const dreamJobs = await retrieveDreamJobs();
     
                     const response = await fetch('/api/learningPath', {
                         method: 'POST',
@@ -42,7 +49,7 @@ export default function Home(){
                             'Authorization': `Bearer ${userToken}`, 
                         },
                         body: JSON.stringify({ 
-                            dreamJob: "Software Engineer", 
+                            dreamJob: dreamJobs, 
                             // Ensure skills is sent as an array of objects, as expected by your server code
                             skills: userSkills, // e.g., [{ name: "Python" }, { name: "SQL" }]
                         }),

@@ -7,7 +7,7 @@ function getDaysData(learningData){
     const todaysMidnight = new Date().setHours(0, 0, 0, 0);
     const todaysContent = learningData.days.filter(day => {
         // 1. Convert the Firestore Timestamp (day.date) to a JS Date object.
-        const dayDate = day.date.toDate(); 
+        const dayDate = Object.prototype.toString.call(day.date) !== "[object Date]" ? day.date.toDate() : day.date; 
         
         // 2. Strip the time from the day's date and get its numeric value.
         const dayMidnightTime = dayDate.setHours(0, 0, 0, 0); 
@@ -45,7 +45,7 @@ export default async function handler(req, res){
     const today = new Date();
     const learningPathsRef = db.collection("learningPaths").doc(userId);
 
-    const learningPath = await learningPathsRef.get();
+    let learningPath = await learningPathsRef.get();
 
     if(learningPath.exists){
         const learningPath_data = learningPath.data();
@@ -61,15 +61,7 @@ export default async function handler(req, res){
         }
     }
 
-    // FIX: You still need to implement the search and the structuring logic here.
     try {
-        // const searchQuery = `${dreamJob} career path and ${skills} tutorials`;
-        // const rawResults = await performSearch(searchQuery);
-
-        // const searchPromises = skills.map(skill => {
-        //     const searchQuery = `${dreamJob} learn "${skill.name}"`;
-        //     return performSearch(searchQuery);
-        // });
 
         const allSkills = skills.map(skill => skill.name);
         const nmbrSkills = allSkills.length;
@@ -77,6 +69,7 @@ export default async function handler(req, res){
         let Queries = [];
 
         if(nmbrSkills == 0){
+            console.log("No skills recorded to learn");
             Queries =  [
                 `"Learn" how to be a ${dreamJob}`, 
                 `Skills to be a successful ${dreamJob}`,
@@ -138,7 +131,7 @@ export default async function handler(req, res){
 
         endDate_D.setDate(today.getDate() + 7);
 
-        let learningJourney = {
+        let learningJourneyA = {
             startDate: today,
             endDate: endDate_D,
             days: []
@@ -147,8 +140,6 @@ export default async function handler(req, res){
         for(let i = 0; i < 7; i++){
             let pages_forTheDay = web.splice(0, 3);
             let vids_forTheDay = video.splice(0, 4);
-
-            console.log("Day:", i+1, vids_forTheDay[i]);
 
             let pages = pages_forTheDay.map(page => getPageInfo(page));
             let vids = vids_forTheDay.map(vid => getVidInfo(vid));
@@ -162,15 +153,15 @@ export default async function handler(req, res){
                 videoResources: vids
             }
 
-            learningJourney["days"].push(day);
+            learningJourneyA["days"].push(day);
         }
 
         // Maybe make it return with something like { highlights: {web: {}, vid: {}}, days: [{vid}, {page}, {vid}, {page}, {vid}] }
 
         // For now, let's just return raw results to confirm search works:
-        await learningPathsRef.set(learningJourney)
-        const todaysJourney = getDaysData(learningJourney);
-        return res.status(200).json({ status: 'Path needed and search successful', todaysJourney });
+        await learningPathsRef.set(learningJourneyA)
+        learningPath = getDaysData(learningJourneyA);
+        return res.status(200).json({ status: 'Path needed and search successful', learningJourney: learningPath });
         
 
     } catch (searchError) {

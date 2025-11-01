@@ -4,7 +4,20 @@
     align-items: center;
     justify-content: center;
     width: 700px;
-    height: 100vh;
+    padding: 1rem;
+    max-width: 100%;
+    min-height: 100vh;
 
+    text-align: justify;
+    line-height: 1.5;
     gap: 2rem;
+}
+
+.sign-in .options{
+    display: flex;
+    gap: 1rem;
+}
+
+.sign-in .warning{
+    text-align: center;
 }

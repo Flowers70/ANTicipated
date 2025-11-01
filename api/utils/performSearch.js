@@ -9,6 +9,7 @@ export const performSearch = async (query) => {
   }
 
   // 2. Define API Endpoints
+  console.log("SEARCHING:", query);
   const encodedQuery = encodeURIComponent(query);
   
   // Endpoint for Google Custom Search (requires both key and cx)
