@@ -6,11 +6,21 @@ import { useState } from 'react';
 import { useAuth } from '../Contexts/AuthContext';
 import { getSkills } from '../Services/firestoreServices';
 
-export default function Skills(){
+export default function Skills({openModal}){
     const [completedSkills, setCompletedSkills] = useState([]);
     const [skillsInProgress, setSkillsInProgress] = useState([]);
 
     const { currentUserProfile, loading } = useAuth();
+
+    const retrieveModal = () => {
+        console.log("Edit clicked!");
+        openModal(
+            <div>
+                <h2>Edit/Add Skill</h2>
+                <input type="text"></input>
+            </div>
+        )
+    }
 
     useEffect(() => {
         if(currentUserProfile && !loading){
@@ -31,7 +41,7 @@ export default function Skills(){
         <div className='all-skills'>
             <div className='section-title'>
                 <h2>All Your Skills</h2>
-                <img src="Edit.svg"></img>
+                <img src="Edit.svg" onClick={retrieveModal}></img>
             </div>
             <div className='section-content'>
                 <GridContainer title="Completed">
