@@ -6,6 +6,7 @@ import { doc, setDoc, getDoc, updateDoc, addDoc, collection } from 'firebase/fir
 import './Setup.css';
 import { useNavigate } from "react-router-dom";
 import { useEffect } from "react";
+import LogOut from "../Components/LogOut";
 
 export default function Setup(){
     const { currentUserProfile, updateProfileState } = useAuth();
@@ -82,7 +83,8 @@ export default function Setup(){
                     <label htmlFor="currentSkills">Enter your current skills (relevant to dream job(s))</label>
                     <input id="currentSkills" type="text"></input>
                 </div>
-                <button onClick={handleSetup}>Continue</button>              
+                <button onClick={handleSetup}>Continue</button>
+                <LogOut />              
             </div>
         </div>
     )

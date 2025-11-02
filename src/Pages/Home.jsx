@@ -10,6 +10,7 @@ import { useEffect } from 'react';
 
 import { getDreamJob, getSkills } from '../Services/firestoreServices';
 import { useState } from 'react';
+import Modal from '../Components/Modal';
 
 
 export default function Home(){
@@ -17,6 +18,19 @@ export default function Home(){
     const [highlights, setHighlights] = useState(null);
     const [learningJourney, setLearningJourney] = useState([]);
     const [learnings, setLearnings] = useState([]);
+
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [modalContent, setModalContent] = useState(null);
+
+    const openModal = (content) => {
+        console.log("Opening Modal");
+        setModalContent(content);
+        console.log("SET");
+        setIsModalOpen(true);
+        console.log("isModalOpen:", isModalOpen);
+    }
+
+    const closeModal = () => setIsModalOpen(false);
     
     console.log(currentUser.displayName);
 
@@ -31,15 +45,17 @@ export default function Home(){
                 }
 
                 const retrieveDreamJobs = async () => {
+                    console.log("CurrentUser:", currentUserProfile.uid);
                     const inProgress = await getDreamJob(currentUserProfile.uid);
                     console.log("DREAM:", inProgress);
-                    return inProgress;
+                    return inProgress.name;
                 }
         
                 const sendRequest = async () => {
                     const userSkills = await retrieveSkills();    
                     const userToken = await currentUser.getIdToken();
                     const dreamJobs = await retrieveDreamJobs();
+                    console.log("Sent dream:", dreamJobs);
     
                     const response = await fetch('/api/learningPath', {
                         method: 'POST',
@@ -54,61 +70,66 @@ export default function Home(){
                             skills: userSkills, // e.g., [{ name: "Python" }, { name: "SQL" }]
                         }),
                     });
+
+                const populateContents = async () => {
+                    console.log("API Response:", data);
+                    // let todaysJourney = data.learningJourney.days.filter(day => new Date((day.date._seconds *1000)) === new Date());
+                    let todaysJourney = data.learningJourney;
+                    console.log("VIEWING:", todaysJourney);
+
+                    let pages = [];
+                    let vids = [];
+
+                    todaysJourney.webResources.forEach(page => pages.push(page));
+                    todaysJourney.videoResources.forEach(vid => vids.push(vid));
+
+                    // Generate Learning Recap
+                    const learningRecap_response = await fetch('/api/learningRecap', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            // Send the token in the Authorization header
+                            'Authorization': `Bearer ${userToken}`, 
+                        },
+                        body: JSON.stringify({ 
+                            pages
+                        }),
+                    });
+
+                    const learningRecap_data = await learningRecap_response.json();
+                    setLearnings(learningRecap_data);
+
+                    let highlight = {
+                        page: pages.splice(0, 1)[0],
+                        vid: vids.splice(0, 1)[0]
+                    }
+
+                    setHighlights(highlight);
+                    console.log("Highlights LOADED");
+
+                    let learningContent = [];
+                    for(let i = 0; i < vids.length; i++){
+                        if(i < vids.length){
+                            vids[i].url = "https://www.youtube.com/watch?v=" + vids[i].url;
+                            learningContent.push(vids[i]);
+                        }
+
+                        if(i < pages.length){
+                            learningContent.push(pages[i]);
+                        }                            
+                    }
+                    setLearningJourney(learningContent);
+                    // SUCCESS! data.searchResults contains the raw Google/YouTube data.
+                    // You can now inspect this structure to build your 7-day formatter.
+                }
         
-                    const data = await response.json();
+                const data = await response.json();
         
                     if (response.ok) {
-                        console.log("API Response:", data);
-                        // let todaysJourney = data.learningJourney.days.filter(day => new Date((day.date._seconds *1000)) === new Date());
-                        let todaysJourney = data.learningJourney;
-                        console.log("VIEWING:", todaysJourney);
-
-                        let pages = [];
-                        let vids = [];
-
-                        todaysJourney.webResources.forEach(page => pages.push(page));
-                        todaysJourney.videoResources.forEach(vid => vids.push(vid));
-
-                        // Generate Learning Recap
-                        const learningRecap_response = await fetch('/api/learningRecap', {
-                            method: 'POST',
-                            headers: {
-                                'Content-Type': 'application/json',
-                                // Send the token in the Authorization header
-                                'Authorization': `Bearer ${userToken}`, 
-                            },
-                            body: JSON.stringify({ 
-                                pages
-                            }),
-                        });
-
-                        const learningRecap_data = await learningRecap_response.json();
-                        setLearnings(learningRecap_data);
-
-                        let highlight = {
-                            page: pages.splice(0, 1)[0],
-                            vid: vids.splice(0, 1)[0]
-                        }
-
-                        setHighlights(highlight);
-                        console.log("Highlights LOADED");
-
-                        let learningContent = [];
-                        for(let i = 0; i < vids.length; i++){
-                            if(i < vids.length){
-                                vids[i].url = "https://www.youtube.com/watch?v=" + vids[i].url;
-                                learningContent.push(vids[i]);
-                            }
-
-                            if(i < pages.length){
-                                learningContent.push(pages[i]);
-                            }                            
-                        }
-                        setLearningJourney(learningContent);
-                        // SUCCESS! data.searchResults contains the raw Google/YouTube data.
-                        // You can now inspect this structure to build your 7-day formatter.
+                        await populateContents();
                     } else {
                         console.error("API Error:", data.error || "Unknown error");
+                        await populateContents();
                     }
                 }
     
@@ -142,11 +163,15 @@ export default function Home(){
             <Learning_Recap learnings={learnings} />
             <div className='line'></div>
 
-            <Skills/>
+            <Skills openModal={openModal} />
 
             <LogOut/>
 
             <a className='attribution' href="https://www.vecteezy.com/free-vector/ant" target="_blank">Ant Vectors by Vecteezy</a>
+        
+            <Modal isOpen={isModalOpen} onClose={closeModal}>
+                {modalContent}
+            </Modal>
         </>
     );
 }

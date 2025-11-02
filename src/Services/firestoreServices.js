@@ -43,6 +43,7 @@ async function getDreamJob(userId){
     const dreamJobs = await getDocs(queryDreams);
 
     if(dreamJobs.empty){
+        console.log("Dream jobs is EMPTY");
         return {
             name: "Software Engineer"
         }

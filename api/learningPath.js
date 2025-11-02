@@ -166,7 +166,8 @@ export default async function handler(req, res){
 
     } catch (searchError) {
         console.error('Search or Generation Failed:', searchError.message);
-        return res.status(500).json({ error: 'Failed to generate learning path due to external API error.' });
+        const defaultJourney = db.collection("learningPaths").doc("default");
+        return res.status(500).json({ error: 'Failed to generate learning path due to external API error.', learningJourney: defaultJourney});
     }
 
     // 5. **STORAGE AND FINAL RESPONSE** (When complete, this will write to Firestore)
