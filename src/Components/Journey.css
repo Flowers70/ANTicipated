@@ -12,7 +12,7 @@
     display: flex;
     flex-direction: column;
     position: relative;
-    gap: 96px;
+    /* gap: 96px; */
     width: 100%;
     align-items: center;
     padding: 2rem;
@@ -55,15 +55,69 @@
     text-decoration: none;
 }
 
-.journey .step:hover{
+.steps{
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    gap: 96px;
+    width: 100%;
+    align-items: center;
+    padding: 2rem;
+    padding-top: 6rem;
+}
+
+.steps .step:hover{
     transform: scale(1.05);
     cursor: pointer;
 }
 
-.journey .step.right{
+/* Right */
+.steps .step:nth-child(4n+2){
     margin-left: 391px;
 }
 
-.journey .step.left{
+/* Left */
+.steps .step:nth-child(4n+4){
     margin-right: 391px;
+}
+
+
+@media (max-width: 768px){
+    .learning-journey{
+        padding: 2rem 0 0 0;
+        gap: 1rem;
+    }
+
+    .learning-journey h2{
+        padding: 0 0.5rem 0 0.5rem;
+        text-align: center;
+    }
+
+    .steps{
+        gap: 1rem;
+        padding: 0;
+    }
+
+    .steps .step{
+        width: 100px;
+        font-size: 12px;
+    }
+
+    /* Right */
+    .steps .step:nth-child(4n+2){
+        margin-left: 0;
+    }
+
+    /* Left */
+    .steps .step:nth-child(4n+4){
+        margin-right: 0;
+    }
+
+    .steps .step:nth-child(odd){
+        margin-left: 50px;
+    }
+
+    .steps .step:nth-child(even){
+        margin-right: 50px;
+    }
 }

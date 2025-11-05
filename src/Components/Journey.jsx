@@ -84,7 +84,14 @@ function Draw_Journey(){
 
         const dy = pathEnd.y - pathStart.y;
 
-        const curvature = 0.5;
+        let curvature;
+
+        if(window.matchMedia('(max-width: 768px)')){
+            curvature = 0.9;
+        }else{
+            curvature = 0.5;
+        }
+        // const curvature = 0.5;
         let curveOffsetX = dx * curvature;
         // This will be the turning point of the "C" curve
         let P2 = {
@@ -200,21 +207,14 @@ export default function Journey({ children }){
             <div className="journey" ref={containerRef}>
                 <svg className="journey-lines"></svg>
                 {loadingSteps && <div className="loading">Loading your journey...</div>}
-                {React.Children.map(children, (child, index) => {
-                    const alternatingClass = (i) => {
-                        i += 1;
-                        if(i % 4 == 2){
-                            return "right";
-                        }else if(i % 4 == 0){
-                            return "left";
-                        }else{
-                            return "";
-                        }
-                    }
-                    return React.cloneElement(child, {
-                        className: `step ${alternatingClass(index)}`
-                    })
-                })}
+                <div className="steps">
+                    {React.Children.map(children, (child, index) => {
+                        return React.cloneElement(child, {
+                            className: `step`
+                        })
+                    })}
+                </div>
+                
                 
             </div>
         </div>
