@@ -63,7 +63,7 @@
     width: 100%;
     align-items: center;
     padding: 2rem;
-    padding-top: 6rem;
+    /* padding-top: 6rem; */
 }
 
 .steps .step:hover{
